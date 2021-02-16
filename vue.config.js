@@ -1,4 +1,6 @@
 module.exports = {
+  publicPath:
+    process.env.NODE_ENV === "production" ? "/openkore-checker/" : "/",
   chainWebpack: (config) => {
     config.module
       .rule("pegjs")
