@@ -1,28 +1,40 @@
 <template>
-  <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
-  </div>
+  <v-app>
+    <v-container fluid>
+      <v-row align="center" justify="center">
+        <v-col cols="10">
+          <config-parser></config-parser>
+        </v-col>
+      </v-row>
+    </v-container>
+  </v-app>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+import configParser from "./components/configParser.vue";
+
+// import buildConfig from "./grammar/openkore.js";
 
 export default {
-  name: 'App',
+  name: "App",
   components: {
-    HelloWorld
-  }
-}
+    configParser,
+  },
+  data() {
+    return {
+      configSelectedType: null,
+      configTypes: [
+        "config.txt",
+        "mon_control.txt",
+        "items_control.txt",
+        "arrowcraft.txt",
+        "avoid.txt",
+        "chat_resp.txt",
+      ],
+    };
+  },
+  methods: {},
+};
 </script>
 
-<style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
-</style>
+<style scoped></style>
