@@ -1,8 +1,8 @@
 <template>
   <div style="height:100%;">
     <span>Check your config.txt</span>
-    <v-card elevation="4" style="height:95%;">
-      <v-card-text style="height:100%;">
+    <v-card elevation="4">
+      <v-card-text>
         <codemirror
           ref="cfgEditor"
           v-model="configData"
@@ -123,6 +123,6 @@ export default {
 .CodeMirror {
   border: 1px solid #eee;
   width: 100%;
-  height: 100%;
+  height: 650px;
 }
 </style>
