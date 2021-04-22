@@ -63,7 +63,6 @@ export default {
         let parsedData = parser.parse(this.configData);
         parsedData.forEach((element) => {
           if (typeof element === "object" && element.key != "#") {
-            console.log(element);
             if (!element.isKeyValid) {
               this.showError({
                 location: element.location,
