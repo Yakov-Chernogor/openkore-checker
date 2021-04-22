@@ -62,10 +62,15 @@ export default {
       try {
         let parsedData = parser.parse(this.configData);
         parsedData.forEach((element) => {
-          if (typeof element === "object" && element.key != "#") {
+          if (
+            typeof element === "object" &&
+            element.key &&
+            element.key != "#"
+          ) {
             if (!element.isKeyValid) {
               this.showError({
                 location: element.location,
+                type: "warning",
                 message: "Unknown key: " + element.key,
               });
             } else if (!element.isValueValid) {
@@ -78,7 +83,6 @@ export default {
         });
       } catch (e) {
         console.log(e);
-        this.showError(e);
         this.configValid = false;
       }
       if (this.lintErrors.length) {
@@ -87,14 +91,18 @@ export default {
         this.configValid = true;
       }
     },
-    showError(e) {
+    showError(error) {
       this.lintErrors.push({
         from: CodeMirror.Pos(
-          e.location.start.line - 1,
-          e.location.start.column - 1
+          error.location.start.line - 1,
+          error.location.start.column - 1
         ),
-        to: CodeMirror.Pos(e.location.end.line - 1, e.location.end.column - 1),
-        message: e.message,
+        to: CodeMirror.Pos(
+          error.location.end.line - 1,
+          error.location.end.column - 1
+        ),
+        severity: error.type,
+        message: error.message,
       });
     },
   },

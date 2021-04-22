@@ -20,10 +20,7 @@ comment = "#"+ comment_text eol? {
 comment_text = . (!eol .)*
 
 block = a:block_key " " '{' eol b:("\t"? keyvalue)* ("\t"? comment)* "}" eol {
-	let vals = [];
-	b.forEach((el) => {
-		vals.push(el[1]);
-	})
+	
 }
 
 block_key = a:([a-z0-9_]i+)
