@@ -14,13 +14,22 @@
             Check
           </v-btn>
           <v-chip
-            v-if="configValid"
+            v-if="configValid && configData.length"
             class="ml-5 pl-5 pr-5 body-1"
             color="green"
             outlined
           >
             <v-icon left>mdi-check</v-icon>
             Valid
+          </v-chip>
+          <v-chip
+            v-else-if="!configValid && lintErrors.length"
+            class="ml-5 pl-5 pr-5 body-1"
+            color="red"
+            outlined
+          >
+            <v-icon left>mdi-check</v-icon>
+            Invalid
           </v-chip>
         </v-card-actions>
       </v-card-text>
@@ -83,12 +92,6 @@ export default {
         });
       } catch (e) {
         console.log(e);
-        this.configValid = false;
-      }
-      if (this.lintErrors.length) {
-        this.configValid = false;
-      } else {
-        this.configValid = true;
       }
     },
     showError(error) {
@@ -113,6 +116,11 @@ export default {
           return this.lintErrors;
         },
       });
+      if (this.lintErrors.length) {
+        this.configValid = false;
+      } else {
+        this.configValid = true;
+      }
     },
     deep: true,
   },
