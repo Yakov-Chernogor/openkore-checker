@@ -77,12 +77,12 @@ export default {
                 this.showError({
                   location: element.location,
                   type: "warning",
-                  message: "Unknown key: " + element.key,
+                  message: `Unknown key: ${element.key}`,
                 });
               } else if (!element.isValueValid) {
                 this.showError({
                   location: element.location,
-                  message: "Invalid value: " + element.value,
+                  message: `Invalid value: ${element.value}`,
                 });
               }
             } else if (element.type == "block") {
@@ -90,7 +90,7 @@ export default {
                 this.showError({
                   location: element.location,
                   type: "warning",
-                  message: "Unknown block key: " + element.key,
+                  message: `Unknown block key: ${element.key}`,
                 });
               } else {
                 element.value.forEach((value) => {
@@ -98,12 +98,12 @@ export default {
                     this.showError({
                       location: element.location,
                       type: "warning",
-                      message: "Unknown block key: " + value.key,
+                      message: `Unknown block key: ${value.key}`,
                     });
                   } else if (!value.isValueValid) {
                     this.showError({
                       location: element.location,
-                      message: "Invalid block key value: " + value.value,
+                      message: `Invalid ${element.key}_${value.key} value: ${value.value}`,
                     });
                   }
                 });

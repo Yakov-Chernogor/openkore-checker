@@ -23,7 +23,7 @@ block = a:(key) " " '{' eol b:(block_keyvalue)* '}' eol? {
 			key: element.key,
 			value: element.value,
 			isKeyValid: cfg.check_block_key(block, element.key),
-			isValueValid: cfg.check_block_keyvalue(element.value)
+			isValueValid: cfg.check_block_keyvalue(block, element.key, element.value)
 		});
 	});
 	return {

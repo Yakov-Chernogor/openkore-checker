@@ -23,7 +23,7 @@ class config {
 
   check_block_keyvalue(block, key, value) {
     if (this.check_block(block)) {
-      return this.block.keys[key].test(value);
+      return this.blocks[block].keys[key].test(value);
     }
     return true;
   }
@@ -70,8 +70,8 @@ class config {
       keys: {
         minTime: /^.*$/,
         varTime: /^.*$/,
-        lvl: /^.*$/,
-        joblvl: /^.*$/,
+        lvl: /^\d*$/,
+        joblvl: /^\d*$/,
       },
     },
   };
