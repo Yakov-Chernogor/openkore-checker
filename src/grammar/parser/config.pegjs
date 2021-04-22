@@ -1,11 +1,6 @@
 {
-	const config = require("./configKeys.js");
-
-	function key_check(key, value) {
-		if(!config.keys.includes(key)) {
-			error("Uknown key: "+key);
-		}
-	}
+	const config = require("@/grammar/key/config.js");
+	const cfg = new config();
 }
 
 config = lines
@@ -13,13 +8,13 @@ lines = line*
 line = comment
 	/ block
 	/ keyvalue
-  / eol {
-    return ""
-  }
+  / eol
 	/ . (!eol .)*
 
 comment = "#"+ comment_text eol? {
-	return false;
+	return {
+		key: "#",
+	}
 }
 
 comment_text = . (!eol .)*
@@ -29,32 +24,22 @@ block = a:block_key " " '{' eol b:("\t"? keyvalue)* ("\t"? comment)* "}" eol {
 	b.forEach((el) => {
 		vals.push(el[1]);
 	})
-	return {
-		type: "block",
-		key: a,
-		value: vals
-	}
 }
 
-block_key = a:([a-z0-9_]i+) {
-	let key = a.join("")
-	key_check(key)
-	return key
-}
+block_key = a:([a-z0-9_]i+)
 
-keyvalue = a:([a-z0-9_]i+) " "? match? ""? b:([a-z0-9.]i+)? eol {
+keyvalue = a:([a-z0-9_]i+) " "? match? ""? b:([a-z0-9.]i+)? eol? {
 	let key = a.join("");
-	let value = b ? b.join("") : null;
-	key_check(key);
+	let value = b ? b.join("") : "";
 	return {
-		key: key,
-		value: value
+		"key": key,
+		"value": value,
+		"location": location(),
+		"isKeyValid": cfg.check_key(key),
+		"isValueValid": cfg.check_value(key, value)
 	}
 }
 
-match = [<>] {
-	return "<>";
-}
+match = [<>]
 
-eol = '\n'
-	/ '\r' '\n'?
+eol = '\n' / '\r' '\n'?

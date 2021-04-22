@@ -1,9 +1,9 @@
 <template>
   <v-app>
-    <v-container fluid>
-      <v-row align="center" justify="center">
-        <v-col cols="10">
-          <config-parser></config-parser>
+    <v-container fluid fill-height>
+      <v-row align="center" justify="center" style="height:100%;">
+        <v-col cols="10" style="height:100%;">
+          <config></config>
         </v-col>
       </v-row>
     </v-container>
@@ -11,14 +11,12 @@
 </template>
 
 <script>
-import configParser from "./components/configParser.vue";
-
-// import buildConfig from "./grammar/openkore.js";
+import config from "@/components/config.vue";
 
 export default {
   name: "App",
   components: {
-    configParser,
+    config,
   },
   data() {
     return {
