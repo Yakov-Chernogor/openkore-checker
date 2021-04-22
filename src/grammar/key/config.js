@@ -10,6 +10,24 @@ class config {
     return true;
   }
 
+  check_block(block) {
+    return block in this.blocks;
+  }
+
+  check_block_key(block, key) {
+    if (this.check_block(block)) {
+      return key in this.blocks[block].keys;
+    }
+    return false;
+  }
+
+  check_block_keyvalue(block, key, value) {
+    if (this.check_block(block)) {
+      return this.block.keys[key].test(value);
+    }
+    return true;
+  }
+
   keys = {
     master: /^.*$/,
     server: /^.*$/,
@@ -39,6 +57,23 @@ class config {
     commandPrefix: /^.{1}$/,
     callSignGM: /^(0|1)$/,
     inGameAuth: /^(0|1)$/,
+  };
+
+  blocks = {
+    autoBreakTime: {
+      keys: {
+        startTime: /^.*$/,
+        stopTime: /^.*$/,
+      },
+    },
+    autoConfChange: {
+      keys: {
+        minTime: /^.*$/,
+        varTime: /^.*$/,
+        lvl: /^.*$/,
+        joblvl: /^.*$/,
+      },
+    },
   };
 }
 

@@ -16,7 +16,7 @@
           <v-chip
             v-if="configValid && configData.length"
             class="ml-5 pl-5 pr-5 body-1"
-            color="green"
+            color="#949810"
             outlined
           >
             <v-icon left>mdi-check</v-icon>
@@ -25,10 +25,10 @@
           <v-chip
             v-else-if="!configValid && lintErrors.length"
             class="ml-5 pl-5 pr-5 body-1"
-            color="red"
+            color="#CE2029"
             outlined
           >
-            <v-icon left>mdi-check</v-icon>
+            <v-icon left>mdi-close</v-icon>
             Invalid
           </v-chip>
         </v-card-actions>
@@ -71,22 +71,43 @@ export default {
       try {
         let parsedData = parser.parse(this.configData);
         parsedData.forEach((element) => {
-          if (
-            typeof element === "object" &&
-            element.key &&
-            element.key != "#"
-          ) {
-            if (!element.isKeyValid) {
-              this.showError({
-                location: element.location,
-                type: "warning",
-                message: "Unknown key: " + element.key,
-              });
-            } else if (!element.isValueValid) {
-              this.showError({
-                location: element.location,
-                message: "Invalid value: " + element.value,
-              });
+          if (typeof element === "object" && element.type) {
+            if (element.type == "key") {
+              if (!element.isKeyValid) {
+                this.showError({
+                  location: element.location,
+                  type: "warning",
+                  message: "Unknown key: " + element.key,
+                });
+              } else if (!element.isValueValid) {
+                this.showError({
+                  location: element.location,
+                  message: "Invalid value: " + element.value,
+                });
+              }
+            } else if (element.type == "block") {
+              if (!element.isKeyValid) {
+                this.showError({
+                  location: element.location,
+                  type: "warning",
+                  message: "Unknown block key: " + element.key,
+                });
+              } else {
+                element.value.forEach((value) => {
+                  if (!value.isKeyValid) {
+                    this.showError({
+                      location: element.location,
+                      type: "warning",
+                      message: "Unknown block key: " + value.key,
+                    });
+                  } else if (!value.isValueValid) {
+                    this.showError({
+                      location: element.location,
+                      message: "Invalid block key value: " + value.value,
+                    });
+                  }
+                });
+              }
             }
           }
         });
