@@ -7,7 +7,7 @@ config = lines
 lines = line*
 line = comment / block / keyvalue / eol / . (!eol .)*
 
-comment = "#"+ comment_text eol? {
+comment = ([\t ])* "#"+ comment_text eol? {
 	return {
 		type: "comment",
 	}
@@ -15,7 +15,7 @@ comment = "#"+ comment_text eol? {
 
 comment_text = . (!eol .)*
 
-block = a:(key) " " '{' eol b:(block_keyvalue)* '}' eol? {
+block = a:(key) " " '{' eol comment* b:(block_keyvalue)* comment* '}' eol? {
 	let block = a.join("");
 	let values = [];
 	b.forEach((element) => {
@@ -37,9 +37,9 @@ block = a:(key) " " '{' eol b:(block_keyvalue)* '}' eol? {
 
 block_keyvalue = ([\t ])* a:key " "? match? " "? b:value? eol? {
 	return {
-    key: a.join(""),
-    value: b ? b.join("") : ""
-  }
+		key: a.join(""),
+		value: b ? b.join("") : ""
+	}
 }
 
 keyvalue = a:(key) " "? match? " "? b:(value)? eol? {
