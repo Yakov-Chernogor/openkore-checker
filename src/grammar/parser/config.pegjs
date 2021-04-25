@@ -7,15 +7,20 @@ config = lines
 lines = line*
 line = comment / block / keyvalue / eol / . (!eol .)*
 
-comment = ([\t ])* "#"+ comment_text eol? {
+keyvalue = a:(key) whitespace? match? whitespace? b:(value)? eol? {
+	let key = a.join("");
+	let value = b ? b.join("") : "";
 	return {
-		type: "comment",
+		type: "key",
+		key: key,
+		value: value,
+		location: location(),
+		isKeyValid: cfg.check_key(key),
+		isValueValid: cfg.check_value(key, value)
 	}
 }
 
-comment_text = . (!eol .)*
-
-block = a:(key) " " '{' eol comment* b:(block_keyvalue)* comment* '}' eol? {
+block = a:(key) whitespace '{' eol comment* b:(block_keyvalue)* '}' eol? {
 	let block = a.join("");
 	let values = [];
 	b.forEach((element) => {
@@ -35,30 +40,27 @@ block = a:(key) " " '{' eol comment* b:(block_keyvalue)* comment* '}' eol? {
 	}
 }
 
-block_keyvalue = ([\t ])* a:key " "? match? " "? b:value? eol? {
+block_keyvalue = whitespace* a:key whitespace? match? whitespace? b:value? eol? comment* eol? {
 	return {
 		key: a.join(""),
 		value: b ? b.join("") : ""
 	}
 }
 
-keyvalue = a:(key) " "? match? " "? b:(value)? eol? {
-	let key = a.join("");
-	let value = b ? b.join("") : "";
+comment = whitespace* "#"+ comment_text eol? {
 	return {
-		type: "key",
-		key: key,
-		value: value,
-		location: location(),
-		isKeyValid: cfg.check_key(key),
-		isValueValid: cfg.check_value(key, value)
+		type: "comment",
 	}
 }
 
+comment_text = . (!eol .)*
+
 key = [a-z0-9_]i+
 
-value = [a-z0-9.]i+
+value = ['.'a-z0-9]i+
 
 match = [<>]
+
+whitespace = [' '\t]
 
 eol = '\n' / '\r' '\n'?

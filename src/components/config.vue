@@ -5,33 +5,37 @@
       <v-card-text>
         <codemirror
           ref="cfgEditor"
-          v-model="configData"
+          v-model="inputData"
           :options="options"
           style="height:85%;"
         ></codemirror>
-        <v-card-actions style="height:15%;">
-          <v-btn color="primary" @click="checkConfig">
-            Check
-          </v-btn>
-          <v-chip
-            v-if="configValid && configData.length"
+        <!-- <v-card-actions class="mt-4">
+          <v-spacer></v-spacer> -->
+        <v-alert elevation="3" :type="isValid ? 'success' : 'error'" dense>
+          <div v-if="isValid">
+            Your config is valid.
+          </div>
+          <div v-else>Config is invalid. Errors: {{ lintErrors.length }}</div>
+        </v-alert>
+        <!-- <v-chip
+            v-if="inputData && inputData.length"
             class="ml-5 pl-5 pr-5 body-1"
             color="#949810"
-            outlined
           >
             <v-icon left>mdi-check</v-icon>
             Valid
-          </v-chip>
-          <v-chip
-            v-else-if="!configValid && lintErrors.length"
+          </v-chip> -->
+        <!-- <v-chip
+            v-else-if="!inputData || lintErrors.length"
             class="ml-5 pl-5 pr-5 body-1"
             color="#CE2029"
             outlined
           >
             <v-icon left>mdi-close</v-icon>
             Invalid
-          </v-chip>
-        </v-card-actions>
+          </v-chip> -->
+        <!-- <v-spacer></v-spacer>
+        </v-card-actions> -->
       </v-card-text>
     </v-card>
   </div>
@@ -53,9 +57,9 @@ export default {
   },
   data() {
     return {
-      configData: null,
-      configValid: false,
+      inputData: null,
       lintErrors: [],
+      keyList: {},
       options: {
         tabSize: 4,
         lineNumbers: true,
@@ -64,30 +68,49 @@ export default {
       },
     };
   },
+  computed: {
+    isValid() {
+      if (this.lintErrors.length) return false;
+      return true;
+    },
+  },
   methods: {
     checkConfig() {
       const parser = require("@/grammar/parser/config.pegjs");
+      this.keyList = [];
       this.lintErrors = [];
       try {
-        let parsedData = parser.parse(this.configData);
+        let parsedData = parser.parse(this.inputData);
         parsedData.forEach((element) => {
           if (typeof element === "object" && element.type) {
             if (element.type == "key") {
               if (!element.isKeyValid) {
-                this.showError({
+                this.addMsg({
                   location: element.location,
                   type: "warning",
                   message: `Unknown key: ${element.key}`,
                 });
               } else if (!element.isValueValid) {
-                this.showError({
+                this.addMsg({
                   location: element.location,
                   message: `Invalid value: ${element.value}`,
                 });
               }
+              if (element.key in this.keyList) {
+                this.addMsg({
+                  location: element.location,
+                  message: `Duplicated: ${element.key}. Already defined on ${
+                    this.keyList[element.key].location.start.line
+                  } line`,
+                });
+              }
+              this.keyList[element.key] = {
+                location: element.location,
+                value: element.value,
+              };
             } else if (element.type == "block") {
               if (!element.isKeyValid) {
-                this.showError({
+                this.addMsg({
                   location: element.location,
                   type: "warning",
                   message: `Unknown block key: ${element.key}`,
@@ -95,13 +118,13 @@ export default {
               } else {
                 element.value.forEach((value) => {
                   if (!value.isKeyValid) {
-                    this.showError({
+                    this.addMsg({
                       location: element.location,
                       type: "warning",
                       message: `Unknown block key: ${value.key}`,
                     });
                   } else if (!value.isValueValid) {
-                    this.showError({
+                    this.addMsg({
                       location: element.location,
                       message: `Invalid ${element.key}_${value.key} value: ${value.value}`,
                     });
@@ -115,7 +138,7 @@ export default {
         console.log(e);
       }
     },
-    showError(error) {
+    addMsg(error) {
       this.lintErrors.push({
         from: CodeMirror.Pos(
           error.location.start.line - 1,
@@ -137,11 +160,10 @@ export default {
           return this.lintErrors;
         },
       });
-      if (this.lintErrors.length) {
-        this.configValid = false;
-      } else {
-        this.configValid = true;
-      }
+    },
+    inputData() {
+      this.lintErrors = [];
+      this.checkConfig();
     },
     deep: true,
   },
