@@ -1,7 +1,7 @@
 <template>
   <div style="height:100%;">
     <span>Check your config.txt</span>
-    <v-card elevation="4">
+    <v-card elevation="2">
       <v-card-text>
         <codemirror
           ref="cfgEditor"
@@ -9,7 +9,7 @@
           :options="options"
           style="height:85%;"
         ></codemirror>
-        <v-alert elevation="3" :type="isValid ? 'success' : 'error'" dense>
+        <v-alert elevation="2" :type="isValid ? 'success' : 'error'" dense>
           <div v-if="isValid">
             Your config is valid.
           </div>
