@@ -5,6 +5,7 @@ class config {
 
   check_value(key, value) {
     if (this.check_key(key)) {
+      console.log(value);
       return this.keys[key].test(value);
     }
     return true;
@@ -52,11 +53,9 @@ class config {
     XKore_listenIp: /((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?).(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?).(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?).(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?))?/,
     XKore_listenPort: /\d+/,
     XKore_publicIp: /((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?).(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?).(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?).(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?))?/,
-    // XKore_ID: //,
     secureAdminPassword: /(0|1)/,
     adminPassword: /.*/,
-    // callSign: //,
-    commandPrefix: /.{1}/,
+    commandPrefix: /^.$/,
     callSignGM: /(0|1)/,
     inGameAuth: /(0|1)/,
   };

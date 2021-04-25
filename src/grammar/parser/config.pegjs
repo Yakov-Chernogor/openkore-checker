@@ -7,21 +7,18 @@ config = lines
 lines = line*
 line = comment / block / keyvalue / eol / . (!eol .)*
 
-keyvalue = a:(key) whitespace? match? whitespace? b:(value)? eol? {
-	let key = a.join("");
-	let value = b ? b.join("") : "";
+keyvalue = a:$key whitespace? match? whitespace? b:$value? eol? {
 	return {
 		type: "key",
-		key: key,
-		value: value,
+		key: a,
+		value: b,
 		location: location(),
-		isKeyValid: cfg.check_key(key),
-		isValueValid: cfg.check_value(key, value)
+		isKeyValid: cfg.check_key(a),
+		isValueValid: cfg.check_value(a, b)
 	}
 }
 
-block = a:(key) whitespace '{' eol comment* b:(block_keyvalue)* '}' eol? {
-	let block = a.join("");
+block = a:$key whitespace '{' eol comment* b:$block_keyvalue* '}' eol? {
 	let values = [];
 	b.forEach((element) => {
 		values.push({
@@ -40,10 +37,10 @@ block = a:(key) whitespace '{' eol comment* b:(block_keyvalue)* '}' eol? {
 	}
 }
 
-block_keyvalue = whitespace* a:key whitespace? match? whitespace? b:value? eol? comment* eol? {
+block_keyvalue = whitespace* a:$key whitespace? match? whitespace? b:$value? eol? comment* eol? {
 	return {
-		key: a.join(""),
-		value: b ? b.join("") : ""
+		key: a,
+		value: b
 	}
 }
 
@@ -57,7 +54,7 @@ comment_text = . (!eol .)*
 
 key = [a-z0-9_]i+
 
-value = ['.'a-z0-9]i+
+value = [a-z0-9!-~]i+
 
 match = [<>]
 
