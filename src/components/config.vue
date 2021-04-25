@@ -9,33 +9,12 @@
           :options="options"
           style="height:85%;"
         ></codemirror>
-        <!-- <v-card-actions class="mt-4">
-          <v-spacer></v-spacer> -->
         <v-alert elevation="3" :type="isValid ? 'success' : 'error'" dense>
           <div v-if="isValid">
             Your config is valid.
           </div>
           <div v-else>Config is invalid. Errors: {{ lintErrors.length }}</div>
         </v-alert>
-        <!-- <v-chip
-            v-if="inputData && inputData.length"
-            class="ml-5 pl-5 pr-5 body-1"
-            color="#949810"
-          >
-            <v-icon left>mdi-check</v-icon>
-            Valid
-          </v-chip> -->
-        <!-- <v-chip
-            v-else-if="!inputData || lintErrors.length"
-            class="ml-5 pl-5 pr-5 body-1"
-            color="#CE2029"
-            outlined
-          >
-            <v-icon left>mdi-close</v-icon>
-            Invalid
-          </v-chip> -->
-        <!-- <v-spacer></v-spacer>
-        </v-card-actions> -->
       </v-card-text>
     </v-card>
   </div>
