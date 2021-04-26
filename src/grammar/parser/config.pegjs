@@ -44,14 +44,14 @@ block_keyvalue = whitespace* a:$key whitespace? match? whitespace? b:$value? eol
 	}
 }
 
-comment = whitespace* "#"+ comment_text eol? {
+comment = whitespace* "#"+ a:$comment_text? eol? {
 	return {
 		type: "comment",
 		location: location()
 	}
 }
 
-comment_text = . (!eol .)*
+comment_text = (!eol .)*
 
 junk = a:$(. (!eol .)*) {
 	return {
@@ -63,7 +63,7 @@ junk = a:$(. (!eol .)*) {
 
 key = [a-z0-9_]i+
 
-value = . (!eol .)*
+value = (!eol .)*
 
 match = [<>]
 
