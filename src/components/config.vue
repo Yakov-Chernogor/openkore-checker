@@ -1,23 +1,29 @@
 <template>
-  <div style="height:100%;">
-    <span>Check your config.txt</span>
-    <v-card elevation="2">
-      <v-card-text>
-        <codemirror
-          ref="cfgEditor"
-          v-model="inputData"
-          :options="options"
-          style="height:85%;"
-        ></codemirror>
-        <v-alert elevation="2" :type="isValid ? 'success' : 'error'" dense>
-          <div v-if="isValid">
-            Your config is valid.
-          </div>
-          <div v-else>Config is invalid. Errors: {{ lintErrors.length }}</div>
-        </v-alert>
-      </v-card-text>
-    </v-card>
-  </div>
+  <v-card elevation="2" style="height:100%;">
+    <v-card-text>
+      <codemirror
+        ref="cfgEditor"
+        v-model="inputData"
+        :options="options"
+        style="height:85%;"
+      ></codemirror>
+      <v-alert elevation="2" :type="status.valid ? 'success' : 'error'" dense>
+        <v-row no-gutters>
+          <v-col cols="10">{{ status.hint }}</v-col>
+          <v-col cols="2" align="end" v-if="!status.valid">
+            <span>
+              <v-icon>mdi-alert-circle-outline</v-icon>
+              {{ status.count.warnings }}
+            </span>
+            <span>
+              <v-icon>mdi-close-circle-outline</v-icon>
+              {{ status.count.errors }}
+            </span>
+          </v-col>
+        </v-row>
+      </v-alert>
+    </v-card-text>
+  </v-card>
 </template>
 
 <script>
@@ -36,7 +42,7 @@ export default {
   },
   data() {
     return {
-      inputData: null,
+      inputData: "",
       lintErrors: [],
       keyList: {},
       options: {
@@ -48,9 +54,25 @@ export default {
     };
   },
   computed: {
-    isValid() {
-      if (this.lintErrors.length) return false;
-      return true;
+    status() {
+      if (this.inputData.length && this.lintErrors.length) {
+        return {
+          valid: false,
+          hint: "Invalid",
+          count: this.countMsg(),
+        };
+      } else if (this.inputData.length && !this.lintErrors.length) {
+        return {
+          valid: true,
+          hint: "Valid",
+          count: this.countMsg(),
+        };
+      }
+      return {
+        valid: true,
+        hint: "Please copy-paste your config.txt",
+        count: this.countMsg(),
+      };
     },
   },
   methods: {
@@ -139,6 +161,18 @@ export default {
         severity: error.type,
         message: error.message,
       });
+    },
+    countMsg() {
+      let warnings = 0;
+      let errors = 0;
+      this.lintErrors.forEach((element) => {
+        if (element.severity == "warning") warnings += 1;
+        else if (element.severity == "error") errors += 1;
+      });
+      return {
+        warnings: warnings,
+        errors: errors,
+      };
     },
   },
   watch: {
