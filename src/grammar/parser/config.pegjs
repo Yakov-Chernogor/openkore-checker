@@ -47,6 +47,7 @@ block_keyvalue = whitespace* a:$key whitespace? match? whitespace? b:$value? eol
 comment = whitespace* "#"+ a:$comment_text? eol? {
 	return {
 		type: "comment",
+		value: a,
 		location: location()
 	}
 }
