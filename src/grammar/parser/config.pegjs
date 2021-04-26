@@ -5,7 +5,7 @@
 
 config = lines
 lines = line*
-line = comment / block / keyvalue / eol / . (!eol .)*
+line = comment / block / keyvalue / eol / junk
 
 keyvalue = a:$key whitespace? match? whitespace? b:$value? eol? {
 	return {
@@ -47,14 +47,23 @@ block_keyvalue = whitespace* a:$key whitespace? match? whitespace? b:$value? eol
 comment = whitespace* "#"+ comment_text eol? {
 	return {
 		type: "comment",
+		location: location()
 	}
 }
 
 comment_text = . (!eol .)*
 
+junk = a:$(. (!eol .)*) {
+	return {
+		type: "junk",
+		value: a,
+		location: location()
+	}
+}
+
 key = [a-z0-9_]i+
 
-value = [a-z0-9!-~]i+
+value = . (!eol .)*
 
 match = [<>]
 

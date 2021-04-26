@@ -72,12 +72,14 @@ export default {
               } else if (!element.isValueValid) {
                 this.addMsg({
                   location: element.location,
+                  type: "error",
                   message: `Invalid value: ${element.value}`,
                 });
               }
               if (element.key in this.keyList) {
                 this.addMsg({
                   location: element.location,
+                  type: "error",
                   message: `Duplicated: ${element.key}. Already defined on ${
                     this.keyList[element.key].location.start.line
                   } line`,
@@ -105,11 +107,18 @@ export default {
                   } else if (!value.isValueValid) {
                     this.addMsg({
                       location: element.location,
+                      type: "error",
                       message: `Invalid ${element.key}_${value.key} value: ${value.value}`,
                     });
                   }
                 });
               }
+            } else if (element.type == "junk") {
+              this.addMsg({
+                location: element.location,
+                type: "error",
+                message: `Parsing error: ${element.value}`,
+              });
             }
           }
         });
