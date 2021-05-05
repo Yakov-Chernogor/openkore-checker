@@ -36,7 +36,7 @@ import "codemirror/addon/lint/lint.css";
 import { codemirror } from "vue-codemirror";
 
 export default {
-  name: "config",
+  name: "mon_control",
   components: {
     codemirror,
   },
@@ -77,7 +77,7 @@ export default {
   },
   methods: {
     checkConfig() {
-      const parser = require("@/grammar/parser/config.pegjs");
+      const parser = require("@/grammar/parser/mon_control.pegjs");
       this.keyList = [];
       this.lintErrors = [];
       try {
@@ -85,18 +85,28 @@ export default {
         parsedData.forEach((element) => {
           if (typeof element === "object" && element.type) {
             if (element.type == "key") {
-              if (!element.isKeyValid) {
-                this.addMsg({
-                  location: element.location,
-                  type: "warning",
-                  message: `Unknown key: ${element.key}`,
-                });
-              } else if (!element.isValueValid) {
-                this.addMsg({
-                  location: element.location,
-                  type: "error",
-                  message: `Invalid value: ${element.value}`,
-                });
+              if (!element.isValueValid.valid) {
+                if (element.isValueValid.pos !== null) {
+                  let location = element.location;
+                  location.start.column =
+                    element.key.length + element.isValueValid.pos;
+                  location.end.column =
+                    element.key.length +
+                    element.isValueValid.pos +
+                    element.isValueValid.len;
+                  console.log(location);
+                  this.addMsg({
+                    location: location,
+                    type: "error",
+                    message: `Invalid value: ${element.isValueValid.value}`,
+                  });
+                } else {
+                  this.addMsg({
+                    location: element.location,
+                    type: "error",
+                    message: `Invalid value: ${element.value}`,
+                  });
+                }
               }
               if (element.key in this.keyList) {
                 this.addMsg({
@@ -111,30 +121,6 @@ export default {
                 location: element.location,
                 value: element.value,
               };
-            } else if (element.type == "block") {
-              if (!element.isKeyValid) {
-                this.addMsg({
-                  location: element.location,
-                  type: "warning",
-                  message: `Unknown block key: ${element.key}`,
-                });
-              } else {
-                element.value.forEach((value) => {
-                  if (!value.isKeyValid) {
-                    this.addMsg({
-                      location: element.location,
-                      type: "warning",
-                      message: `Unknown block key: ${value.key}`,
-                    });
-                  } else if (!value.isValueValid) {
-                    this.addMsg({
-                      location: element.location,
-                      type: "error",
-                      message: `Invalid ${element.key}_${value.key} value: ${value.value}`,
-                    });
-                  }
-                });
-              }
             } else if (element.type == "junk") {
               this.addMsg({
                 location: element.location,

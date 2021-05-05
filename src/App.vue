@@ -5,12 +5,12 @@
         <v-col cols="10" style="height:100%;">
           <v-tabs v-model="tab" align-with-title>
             <v-tabs-slider color="green"></v-tabs-slider>
-            <v-tab v-for="item in tabs" :key="item">
+            <v-tab v-for="item in tabs" :key="item.name">
               {{ item.name }}
             </v-tab>
           </v-tabs>
           <v-tabs-items v-model="tab">
-            <v-tab-item v-for="item in tabs" :key="item">
+            <v-tab-item v-for="item in tabs" :key="item.name">
               <v-component :is="item.component"></v-component>
             </v-tab-item>
           </v-tabs-items>
@@ -22,11 +22,13 @@
 
 <script>
 import config from "@/components/config.vue";
+import mon_control from "@/components/mon_control.vue";
 
 export default {
   name: "App",
   components: {
     config,
+    mon_control,
   },
   data() {
     return {
@@ -36,10 +38,10 @@ export default {
           name: "config.txt",
           component: config,
         },
-        // {
-        //   name: "mon_control.txt",
-        //   component: mon_control,
-        // },
+        {
+          name: "mon_control.txt",
+          component: mon_control,
+        },
         // {
         //   name: "items_control.txt",
         //   component: items_control,

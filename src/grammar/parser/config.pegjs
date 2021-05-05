@@ -18,10 +18,10 @@ keyvalue = a:$key whitespace? match? whitespace? b:$value? eol? {
 	}
 }
 
-block = a:$key whitespace '{' b:(eol / whitespace / comment / block_keyvalue)* '}' eol? {
+block = a:$key b:block_name? whitespace '{' c:(eol / whitespace / comment / block_keyvalue)* '}' eol? {
 	let values = [];
-	b.forEach((element) => {
-		if (element.type == "block_key"){
+	c.forEach((element) => {
+		if (element.type == "block_key") {
 			values.push({
 				key: element.key,
 				value: element.value,
@@ -34,10 +34,15 @@ block = a:$key whitespace '{' b:(eol / whitespace / comment / block_keyvalue)* '
 	return {
 		type: "block",
 		key: a,
+		name: b ? b : null,
 		value: values,
 		location: location(),
 		isKeyValid: cfg.check_block(a)
 	}
+}
+
+block_name = whitespace a:$key {
+	return a
 }
 
 block_keyvalue = whitespace* a:$key whitespace? match? whitespace? b:$value? eol? {
@@ -49,7 +54,7 @@ block_keyvalue = whitespace* a:$key whitespace? match? whitespace? b:$value? eol
 	}
 }
 
-comment = whitespace* "#"+ a:$comment_text? eol? {
+comment = whitespace* "#" a:$comment_text? eol? {
 	return {
 		type: "comment",
 		value: a,
