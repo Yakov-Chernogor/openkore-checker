@@ -14,6 +14,15 @@ class config {
     return block in this.blocks;
   }
 
+  check_block_name(block, name) {
+    if (this.check_block(block)) {
+      if (this.blocks[block].name) {
+        return this.blocks[block].name.test(name);
+      }
+    }
+    return true;
+  }
+
   check_block_key(block, key) {
     if (this.check_block(block)) {
       return key in this.blocks[block].keys;
@@ -137,6 +146,7 @@ class config {
 
   blocks = {
     autoBreakTime: {
+      name: /^(all|mon|tue|wed|thu|fri|sat|sun)$/,
       keys: {
         startTime: /^((([0,1][0-9])|(2[0-3])):[0-5][0-9])?$/,
         stopTime: /^((([0,1][0-9])|(2[0-3])):[0-5][0-9])?$/,

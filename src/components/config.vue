@@ -44,7 +44,8 @@ export default {
     return {
       inputData: "",
       lintErrors: [],
-      keyList: {},
+      keyList: [],
+      blockKeyList: [],
       options: {
         tabSize: 4,
         lineNumbers: true,
@@ -78,8 +79,8 @@ export default {
   methods: {
     checkConfig() {
       const parser = require("@/grammar/parser/config.pegjs");
-      this.keyList = [];
       this.lintErrors = [];
+      this.keyList = [];
       try {
         let parsedData = parser.parse(this.inputData);
         parsedData.forEach((element) => {
@@ -89,20 +90,20 @@ export default {
                 this.addMsg({
                   location: element.location,
                   type: "warning",
-                  message: `Unknown key: ${element.key}`,
+                  message: `Unknown key: "${element.key}"`,
                 });
               } else if (!element.isValueValid) {
                 this.addMsg({
                   location: element.location,
                   type: "error",
-                  message: `Invalid value: ${element.value}`,
+                  message: `Invalid value: "${element.value}"`,
                 });
               }
               if (element.key in this.keyList) {
                 this.addMsg({
                   location: element.location,
                   type: "error",
-                  message: `Duplicated: ${element.key}. Already defined on ${
+                  message: `Duplicated: "${element.key}". Already defined on ${
                     this.keyList[element.key].location.start.line
                   } line`,
                 });
@@ -116,30 +117,53 @@ export default {
                 this.addMsg({
                   location: element.location,
                   type: "warning",
-                  message: `Unknown block key: ${element.key}`,
+                  message: `Unknown block key: "${element.key}"`,
                 });
               } else {
+                if (!element.isNameValid) {
+                  this.addMsg({
+                    location: element.location,
+                    type: "error",
+                    message: `Unknown block name: "${element.name}"`,
+                  });
+                }
+                this.blockKeyList = [];
                 element.value.forEach((value) => {
                   if (!value.isKeyValid) {
                     this.addMsg({
                       location: element.location,
                       type: "warning",
-                      message: `Unknown block key: ${value.key}`,
+                      message: `Unknown block key: "${value.key}"`,
                     });
                   } else if (!value.isValueValid) {
                     this.addMsg({
                       location: element.location,
                       type: "error",
-                      message: `Invalid ${element.key}_${value.key} value: ${value.value}`,
+                      message: `Invalid ${element.key}_${value.key} value: "${value.value}"`,
                     });
                   }
+                  if (value.key in this.blockKeyList) {
+                    this.addMsg({
+                      location: element.location,
+                      type: "error",
+                      message: `Duplicated block key: "${
+                        value.key
+                      }". Already defined on ${
+                        this.blockKeyList[value.key].location.start.line
+                      } line`,
+                    });
+                  }
+                  this.blockKeyList[value.key] = {
+                    location: value.location,
+                    value: value.value,
+                  };
                 });
               }
             } else if (element.type == "junk") {
               this.addMsg({
                 location: element.location,
                 type: "error",
-                message: `Parsing error: ${element.value}`,
+                message: `Parsing error: "${element.value}"`,
               });
             }
           }
